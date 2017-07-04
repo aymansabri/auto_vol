@@ -94,5 +94,5 @@ De plus, un **foremost** est fait sur le dump.
 
 ## TODO
 
-Gérer les commandes Linux
-Changer le strings, grep en printkey pour le nom du PC
+1. Gérer les commandes Linux
+2. Changer le strings, grep en printkey pour le nom du PC
