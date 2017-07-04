@@ -1,0 +1,35 @@
+**************************************************
+Process: 2548 explorer.exe
+Cache type "DEST" at 0x33c26b
+Last modified: 2013-01-12 17:59:14 UTC+0000
+Last accessed: 2013-01-12 16:59:16 UTC+0000
+URL: John Doe@http://fr.msn.com/?rd=1&ucc=FR&dcc=FR&opt=0&ocid=iehp
+Title: MSN Hotmail.fr, Messenger, Skype, Actualit, Sport, People, Femmes - MSN France
+**************************************************
+Process: 2548 explorer.exe
+Cache type "DEST" at 0x3838d3
+Last modified: 2013-01-12 17:59:10 UTC+0000
+Last accessed: 2013-01-12 16:59:12 UTC+0000
+URL: John Doe@http://www.lemonde.fr
+Title: Le Monde.fr - Actualit  la Une
+**************************************************
+Process: 2548 explorer.exe
+Cache type "DEST" at 0x2ef2d1b
+Last modified: 2013-01-12 17:59:10 UTC+0000
+Last accessed: 2013-01-12 16:59:12 UTC+0000
+URL: John Doe@http://www.lemonde.fr
+Title: Le Monde.fr - Actualit  la Une
+**************************************************
+Process: 2548 explorer.exe
+Cache type "DEST" at 0x4da185b
+Last modified: 2013-01-12 17:59:14 UTC+0000
+Last accessed: 2013-01-12 16:59:16 UTC+0000
+URL: John Doe@http://fr.msn.com/?rd=1&ucc=FR&dcc=FR&opt=0&ocid=iehp
+Title: MSN Hotmail.fr, Messenger, Skype, Actualit, Sport, People, Femmes - MSN France
+**************************************************
+Process: 3044 iexplore.exe
+Cache type "DEST" at 0x40535e3
+Last modified: 2013-01-12 17:59:14 UTC+0000
+Last accessed: 2013-01-12 16:59:16 UTC+0000
+URL: John Doe@http://fr.msn.com/?rd=1&ucc=FR&dcc=FR&opt=0&ocid=iehp
+Title: MSN Hotmail.fr, Messenger, Skype, Actualit, Sport, People, Femmes - MSN France
