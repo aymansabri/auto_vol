@@ -77,18 +77,18 @@ Si c'est un dump Windows, la batterie de commande s'execute normalement, sinon s
 
 Pour Windows :
 1. Le nom du PC se fait via un "string, grep" (un printkey est prévu)
-2. Les hash de la base SAM
-3. Command
-4. CMDScan
-5. pstree
-6. psxview (pour les process cachés)
-7. Détection de bitlocker
+2. Les hash de la base SAM (hashdump)
+3. Consoles (consoles)
+4. CMDScan (cmdscan)
+5. pstree (pstree)
+6. psxview (pour les process cachés) (psxview)
+7. Détection de bitlocker 
 8. Détection de Truecrypt + récupération des clés
-9. Contenu du presse papier
-10. Récupère les screenshots
-11. Historique des navigateurs
-12. Traffic réseau
-13. Filescan
+9. Contenu du presse papier (clipboard)
+10. Récupère les screenshots (screenshots)
+11. Historique des navigateurs (iehistory)
+12. Traffic réseau (netscan)
+13. Filescan (filescan)
 
 De plus, un **foremost** est fait sur le dump.
 
@@ -96,3 +96,4 @@ De plus, un **foremost** est fait sur le dump.
 
 1. Gérer les commandes Linux
 2. Changer le strings, grep en printkey pour le nom du PC
+3. Améliorer l'output
