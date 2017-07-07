@@ -84,8 +84,32 @@ https://github.com/volatilityfoundation/volatility/wiki/Linux
 ***Windows***
 
 ```bash
-$ ./auto_vol -d memory.raw -f output
-Analyze in progress....
+▶ ./auto_vol -d ~/Documents/CTF/RootMe/cc/ch2.dmp -f test
+
+                            ,;::,      
+                                  ,;;;'''      
+                                  ,;;;'';      
+                                  ,;;;'''     
+                                  ,.''''    
+                                  ,   
+                                  ,   
+                         ,;:::;;;;.,,,,,,,,,  
+                       ,;;;:;:;;;;.,,,,,,,,,,  
+                     ,::;;    ;;;;.,,,    ,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,...,  
+                    ,:::;;    ;;;;.,,,    ,,....  
+                    ,;::;;    ;;;;.,,,    ,,.... 
+                    ,;;;;;;;;;;;;;.,,,,...,,.... 
+                    ,;;;;;;;;;;;;;.,,,,...,,.... 
+                     ,;;;;;;;;;;;;.,,,,...,,... 
+                              ;;;;.,,, 
+                          ;;;;;;;;.,,,,..., 
+                           ,,...,,........ 
+                             ,;;;;.,,,,
+                               :;;.,,
+                                 :.
 
 Volatility Foundation Volatility Framework 2.6
 INFO    : volatility.debug    : Determining profile based on KDBG search...
@@ -96,26 +120,25 @@ Volatility Foundation Volatility Framework 2.6
 Volatility Foundation Volatility Framework 2.6
 Volatility Foundation Volatility Framework 2.6
 Volatility Foundation Volatility Framework 2.6
-Wrote output/screenshot/session_0.Service-0x0-3e5$.Default.png
-Wrote output/screenshot/session_0.msswindowstation.mssrestricteddesk.png
-Wrote output/screenshot/session_0.Service-0x0-3e7$.Default.png
-Wrote output/screenshot/session_0.Service-0x0-3e4$.Default.png
-Wrote output/screenshot/session_0.WinSta0.Default.png
+Wrote test/screenshot/session_0.Service-0x0-3e5$.Default.png
+Wrote test/screenshot/session_0.msswindowstation.mssrestricteddesk.png
+Wrote test/screenshot/session_0.Service-0x0-3e7$.Default.png
+Wrote test/screenshot/session_0.Service-0x0-3e4$.Default.png
+Wrote test/screenshot/session_0.WinSta0.Default.png
 WARNING : volatility.debug    : 0\WinSta0\Disconnect has no windows
 
-Wrote output/screenshot/session_0.WinSta0.Winlogon.png
-Wrote output/screenshot/session_1.WinSta0.Default.png
-Wrote output/screenshot/session_1.WinSta0.Disconnect.png
-Wrote output/screenshot/session_1.WinSta0.Winlogon.png
+Wrote test/screenshot/session_0.WinSta0.Winlogon.png
+Wrote test/screenshot/session_1.WinSta0.Default.png
+Wrote test/screenshot/session_1.WinSta0.Disconnect.png
+Wrote test/screenshot/session_1.WinSta0.Winlogon.png
 Volatility Foundation Volatility Framework 2.6
-Processing: /home/billy/Documents/CTF/RootMe/cc/ch2.dmp
-|******|
 Volatility Foundation Volatility Framework 2.6
 Volatility Foundation Volatility Framework 2.6
 
-####################
-## END ! Enj0y :) ##
-####################
+
+Foremost in progress..
+Processing: /home/billy/Documents/CTF/RootMe/cc/ch2.dmp
+|******|
 ```
 
 Cf. le dossier **output** pour voir la sortie. C'est tiré du dump C&C de Root-me.
@@ -143,10 +166,16 @@ Pour Windows :
 12. Traffic réseau (netscan)
 13. Filescan (filescan)
 
+Pour Linux : 
+1. Détection de profile (Testé sur du Ubuntu 16.04 pour le moment)
+2. Détection de clé Master Key LUKS + extraction
+3. Linux_banner
+
 De plus, un **foremost** est fait sur le dump.
 
 ## TODO
 
 1. Gérer les commandes Linux -> In progress...
+1.1. Auto mount des dump de disque (chiffré LUKS ou non)
 2. Changer le strings, grep en printkey pour le nom du PC
 3. Améliorer l'output
