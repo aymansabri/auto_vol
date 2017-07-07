@@ -4,32 +4,43 @@
 ## Contact :	alan.marrec@protonmail.com
 ## Team :	_PRIME_
 
+# Colors management
+NC='\033[0m' # No color
+RED='\033[0;31m'
+LRED='\033[1;31m'
+GREEN='\033[0;32m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BLUE='\033[1;34m'
+GRAY='\033[1;37m'
 
 # Useless ASCII art
-echo "
-                     .sssssssss.
-                .sssssssssssssssssss
-              sssssssssssssssssssssssss
-             ssssssssssssssssssssssssssss
-             @@sssssssssssssssssssssss@ss
-             |s@@@@sssssssssssssss@@@@s|s
-      _______|sssss@@@@@sssss@@@@@sssss|s
-    /         sssssssss@sssss@sssssssss|s      Drinking rum before 10 A.M makes you a pirate, not an alcoholic.
-   /  .------+.ssssssss@sssss@ssssssss.|
-  /  /       |...sssssss@sss@sssssss...|
- |  |        |.......sss@sss@ssss......|
- |  |        |..........s@ss@sss.......|
- |  |        |...........@ss@..........|
-  \  \       |............ss@..........|
-   \  '------+...........ss@...........|
-    \________ .........................|
-             |.........................|
-            /...........................\\
-           |.............................|   
-              |.......................|
-                  |...............|
+printf "
+	                          ${GRAY},${NC}${LRED};::,${NC}      
+                                  ${GRAY},${NC}${LRED};;;'''${NC}      
+                                  ${GRAY},${NC}${LRED};;;'';${NC}      
+                                  ${GRAY},${NC}${LRED};;;'''${NC}     
+                                  ${GRAY},${NC}${LRED}.''''${NC}    
+                                  ${GRAY},${NC}   
+                                  ${GRAY},${NC}   
+                         ${RED},;:::;;;;${NC}${BLUE}.,,,,,,,,,${NC}  
+                       ${RED},;;;:;:;;;;${NC}${BLUE}.,,,,,,,,,,${NC}  
+                     ${RED},::;;    ;;;;${NC}${BLUE}.,,,    ,,,,,${NC}  
+                    ${RED},:::;;    ;;;;${NC}${BLUE}.,,,    ,,,,,,${NC}  
+                    ${RED},:::;;    ;;;;${NC}${BLUE}.,,,    ,,,,,,${NC}  
+                    ${RED},:::;;    ;;;;${NC}${BLUE}.,,,    ,,...,${NC}  
+                    ${RED},:::;;    ;;;;${NC}${BLUE}.,,,    ,,....${NC}  
+                    ${RED},;::;;    ;;;;${NC}${BLUE}.,,,    ,,....${NC} 
+                    ${RED},;;;;;;;;;;;;;${NC}${BLUE}.,,,,...,,....${NC} 
+                    ${RED},;;;;;;;;;;;;;${NC}${BLUE}.,,,,...,,....${NC} 
+                     ${RED},;;;;;;;;;;;;${NC}${BLUE}.,,,,...,,...${NC} 
+                              ${RED};;;;${NC}${BLUE}.,,,${NC} 
+                          ${RED};;;;;;;;${NC}${BLUE}.,,,,...,${NC} 
+                           ${RED},,...,,${NC}${BLUE}........${NC} 
+                             ${RED},;;;;${NC}${BLUE}.,,,,${NC}
+                               ${RED}:;;${NC}${BLUE}.,,${NC}
+                                 ${RED}:${NC}${BLUE}.${NC}
 
-Analyze in progress....
 "
 
 # Argument management
@@ -51,97 +62,151 @@ while getopts "hd:f" optionName; do
 	esac
 done
 
+
+
 # Make the ${base} directory and audit.txt into ${base}
 mkdir ${base}
 touch ${base}/audit.txt
 
-# Get OS type, store it in OS variable and put it in audit.txt
-# If it's a Linux memory dump, it shows informations to make your own profile.
-if [[ $(strings ${dump} | grep -i "Linux version") ]]; then
-	strings ${dump} | grep -i "Linux version"
-	echo "Make your Linux profile"
-	exit
-else
+# Windows operations
+function Windows {
 	OS="$(volatility -f ${dump} imageinfo | while read line; do if [[ "$line" =~ "Profile(s)" ]]; then echo "$line" | awk '{split($0,a,": "); print a[2]}' | awk '{split($0,a,","); print a[1]}'; fi; done)"
+
+	echo "OS Type : ${OS}" >> ${base}/audit.txt
+
+	# Get the name of the computer
+	name="$(strings ${dump} | grep "^COMPUTERNAME" | head -n 1 | awk '{split($0,a,"="); print a[2]}')"
+	echo "Name of the computer : ${name}" >> ${base}/audit.txt
+
+	# Get users hash
+	hashd="$(volatility -f ${dump} --profile="${OS}" hashdump)"
+	echo "" >> ${base}/audit.txt
+	echo "User hashs : " >> ${base}/audit.txt
+	echo "${hashd}" >> ${base}/audit.txt
+
+	# Get command
+	cmdsc="$(volatility -f ${dump} --profile="${OS}" cmdscan)"
+	echo "" >> ${base}/audit.txt
+	echo "Command scan : " >> ${base}/audit.txt
+	echo "${cmdscan}" >> ${base}/audit.txt
+
+	# Get consoles command
+	conso="$(volatility -f ${dump} --profile="${OS}" consoles)"
+	echo "" >> ${base}/audit.txt
+	echo "Consoles : " >> ${base}/audit.txt
+	echo "${conso}" >> ${base}/audit.txt  
+
+	# Dump pstree in current_process.txt locate in ${base} directory
+	volatility -f ${dump} --profile="${OS}" pstree >> ${base}/current_process.txt
+
+	# Get all process, even hidden ones (not in a tree)
+	volatility -f ${dump} --profile="${OS}" psxview >> ${base}/all_process.txt
+
+	# Put interesting process in the audit.txt
+	echo "" >> ${base}/audit.txt
+	echo "Interesting process : " >> ${base}/audit.txt
+
+	# Is bitlocker present ? If yes, see tools associate
+	if [[ $(cat ${base}/all_process.txt | grep -i "fvenotify") ]]; then
+	        echo "Bitlocker is present on the volume" >> ${base}/audit.txt
+		echo "Bitlocker plugin is downloadable here : https://github.com/elceef/bitlocker" >> ${base}/audit.txt
+		echo "Bdemount is present in libbde downloadable here : https://github.com/libyal/libbde" >> ${base}/audit.txt
+	fi
+
+	# Is truecrypt present ? If yes, informations stored in truecrypt_info.txt
+	cat ${base}/current_process.txt | grep -i "truecrypt" >> ${base}/audit.txt
+	if [[ $(cat ${base}/audit.txt | grep -i "truecrypt") ]]; then
+		touch ${base}/truecrypt_info.txt
+		echo "Truecrypt summary : " >> ${base}/truecrypt_info.txt
+		volatility -f ${dump} --profile="${OS}" truecryptsummary >> ${base}/truecrypt_info.txt
+		echo "" >> ${base}/truecrypt_info.txt
+		echo "Passphrase : " >> ${base}/truecrypt_info.txt
+		volatility -f ${dump} --profile="${OS}" truecryptpassphrase >> ${base}/truecrypt_info.txt
+	fi
+
+	# Clipboard paste in audit.txt
+	clip="$(volatility -f ${dump} --profile="${OS}" clipboard)"
+	echo "" >> ${base}/audit.txt
+	echo "Clipboard : " >> ${base}/audit.txt
+	echo "${clip}" >> ${base}/audit.txt
+
+	# Get screenshot from the ${dump}
+	mkdir ${base}/screenshot
+	volatility -f ${dump} --profile="${OS}" screenshot -D ${base}/screenshot/
+
+	# Do a scan of present files in the ${dump}
+	volatility -f ${dump} --profile="${OS}" filescan > ${base}/present_file.txt
+
+	# Get history from ${dump}
+	volatility -f ${dump} --profile="${OS}" iehistory > ${base}/iehistory.txt
+
+	# Get network traffic
+	volatility -f ${dump} --profile="${OS}" netscan > ${base}/netscan.txt
+
+}
+
+# Linux operations
+function Linux {
+	linvers=$(strings ${dump} | grep -i "Linux version" | uniq)
+	bootimg=$(strings ${dump} | grep -ioE 'BOOT_IMAGE\S+' | uniq)
+	echo $linvers
+	echo ""
+	echo $bootimg
+	echo ""
+	
+	if [[ $(echo $linvers | grep Ubuntu) ]]; then
+		linkern=$(echo $bootimg | cut -c26-)
+		printf "${PURPLE}When the Ubuntu VM is up :\n${NC}"
+		printf "sudo apt-get install linux-image-${linkern} linux-headers-${linkern} volatility-tools\n"
+		printf "${RED}Restart it, press SHIFT and boot on the new Kernel.\n${NC}"
+		echo ""
+		printf "${PURPLE}Please enter the name of the new profile : \n${NC}"
+		read newLinProf
+		printf "cd /usr/src/volatility-tools/linux && make && zip ${newLinProf}.zip /usr/src/volatility-tools/linux/module.dwarf /boot/System.map-${linkern}-generic\n"
+		printf "${PURPLE}Then place the zip file in : /usr/lib/python2.7/site-packages/volatility/plugins/overlays/linux\n${NC}"
+	else
+		echo "Unknown OS"
+	fi
+
+	echo ""
+	printf "${PURPLE}Actual profiles installed : ${NC}"
+	echo ""
+	volatility --info 2>&1 | grep -i 'profile for linux' 
+	echo ""
+	echo "Which profiles are you wanting to use ?"
+	read linProfile
+	#echo $linProfile # Debug
+	if [[ $(volatility -f ${dump} --profile=${linProfile} linux_banner 2>&1 | grep 'Linux version') ]]; then
+		printf "${GREEN}[+] Good profile"
+
+		if [[ $(strings ${dump} | grep -i "type=\"crypto_LUKS\"") ]]; then
+			printf ", crypto_LUKS find ! Trying to get the Master Key...${NC}\n"
+			./aeskeyfind ${dump} > key.bin
+			printf "[+] Master Key stored in ${CYAN}key.bin${NC} !"
+		else
+			printf "\n${RED}[-] No LUKS type found in the dump${NC}"
+		fi
+
+		linBanner=$(volatility -f ${dump} --profile=${linProfile} linux_banner 2>&1)
+		echo $linBanner > ${base}/audit.txt
+
+
+	else
+		printf "${RED}Bad profile.. Try again :(${NC}"
+		exit
+	fi
+
+}
+
+if [[ $(strings ${dump} | grep -i "Linux version") ]]; then
+	Linux
+else
+	Windows
 fi
 
-echo "OS Type : ${OS}" >> ${base}/audit.txt
-
-# Get the name of the computer
-name="$(strings ${dump} | grep "^COMPUTERNAME" | head -n 1 | awk '{split($0,a,"="); print a[2]}')"
-echo "Name of the computer : ${name}" >> ${base}/audit.txt
-
-# Get users hash
-hashd="$(volatility -f ${dump} --profile="${OS}" hashdump)"
-echo "" >> ${base}/audit.txt
-echo "User hashs : " >> ${base}/audit.txt
-echo "${hashd}" >> ${base}/audit.txt
-
-# Get command
-cmdsc="$(volatility -f ${dump} --profile="${OS}" cmdscan)"
-echo "" >> ${base}/audit.txt
-echo "Command scan : " >> ${base}/audit.txt
-echo "${cmdscan}" >> ${base}/audit.txt
-
-# Get consoles command
-conso="$(volatility -f ${dump} --profile="${OS}" consoles)"
-echo "" >> ${base}/audit.txt
-echo "Consoles : " >> ${base}/audit.txt
-echo "${conso}" >> ${base}/audit.txt  
-
-# Dump pstree in current_process.txt locate in ${base} directory
-volatility -f ${dump} --profile="${OS}" pstree >> ${base}/current_process.txt
-
-# Get all process, even hidden ones (not in a tree)
-volatility -f ${dump} --profile="${OS}" psxview >> ${base}/all_process.txt
-
-# Put interesting process in the audit.txt
-echo "" >> ${base}/audit.txt
-echo "Interesting process : " >> ${base}/audit.txt
-
-# Is bitlocker present ? If yes, see tools associate
-if [[ $(cat ${base}/all_process.txt | grep -i "fvenotify") ]]; then
-        echo "Bitlocker is present on the volume" >> ${base}/audit.txt
-	echo "Bitlocker plugin is downloadable here : https://github.com/elceef/bitlocker" >> ${base}/audit.txt
-	echo "Bdemount is present in libbde downloadable here : https://github.com/libyal/libbde" >> ${base}/audit.txt
-fi
-
-# Is truecrypt present ? If yes, informations stored in truecrypt_info.txt
-cat ${base}/current_process.txt | grep -i "truecrypt" >> ${base}/audit.txt
-if [[ $(cat ${base}/audit.txt | grep -i "truecrypt") ]]; then
-	touch ${base}/truecrypt_info.txt
-	echo "Truecrypt summary : " >> ${base}/truecrypt_info.txt
-	volatility -f ${dump} --profile="${OS}" truecryptsummary >> ${base}/truecrypt_info.txt
-	echo "" >> ${base}/truecrypt_info.txt
-	echo "Passphrase : " >> ${base}/truecrypt_info.txt
-	volatility -f ${dump} --profile="${OS}" truecryptpassphrase >> ${base}/truecrypt_info.txt
-fi
-
-# Clipboard paste in audit.txt
-clip="$(volatility -f ${dump} --profile="${OS}" clipboard)"
-echo "" >> ${base}/audit.txt
-echo "Clipboard : " >> ${base}/audit.txt
-echo "${clip}" >> ${base}/audit.txt
-
-# Get screenshot from the ${dump}
-mkdir ${base}/screenshot
-volatility -f ${dump} --profile="${OS}" screenshot -D ${base}/screenshot/
-
-# Do a scan of present files in the ${dump}
-volatility -f ${dump} --profile="${OS}" filescan > ${base}/present_file.txt
+# Generic actions, same for Windows or Linux
 
 # Do a foremost to recover some hidden files
+printf "\n\n${CYAN}Foremost in progress..${NC}\n"
 mkdir ${base}/foremost
 foremost -i ${dump} -o ${base}/foremost >> /dev/null
-
-# Get history from ${dump}
-volatility -f ${dump} --profile="${OS}" iehistory > ${base}/iehistory.txt
-
-# Get network traffic
-volatility -f ${dump} --profile="${OS}" netscan > ${base}/netscan.txt
-
-echo "
-####################
-## END ! Enj0y :) ##
-####################
-"

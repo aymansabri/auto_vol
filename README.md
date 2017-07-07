@@ -18,12 +18,65 @@ where:
 ***Linux***
 
 ```bash
-$ ./auto_vol -d memory.raw -f linux_test
-Linux version 4.4.0-72-lowlatency (buildd@lcy01-17) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.4) ) #93-Ubuntu SMP PREEMPT Fri Mar 31 15:25:21 UTC 2017 (Ubuntu 4.4.0-72.93-lowlatency 4.4.49)
-Make your Linux profile
+▶ ./auto_vol2 -d ~/Documents/CTF/RootMe/findmeagain/backup/memory.raw -f linux
+
+	                          ,;::,      
+                                  ,;;;'''      
+                                  ,;;;'';      
+                                  ,;;;'''     
+                                  ,.''''    
+                                  ,   
+                                  ,   
+                         ,;:::;;;;.,,,,,,,,,  
+                       ,;;;:;:;;;;.,,,,,,,,,,  
+                     ,::;;    ;;;;.,,,    ,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,,,,,  
+                    ,:::;;    ;;;;.,,,    ,,...,  
+                    ,:::;;    ;;;;.,,,    ,,....  
+                    ,;::;;    ;;;;.,,,    ,,.... 
+                    ,;;;;;;;;;;;;;.,,,,...,,.... 
+                    ,;;;;;;;;;;;;;.,,,,...,,.... 
+                     ,;;;;;;;;;;;;.,,,,...,,... 
+                              ;;;;.,,, 
+                          ;;;;;;;;.,,,,..., 
+                           ,,...,,........ 
+                             ,;;;;.,,,,
+                               :;;.,,
+                                 :.
+
+Linux version 4.4.0-72-lowlatency (buildd@lcy01-17) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.4) ) #93-Ubuntu SMP PREEMPT Fri Mar 31 15:25:21 UTC 2017 (Ubuntu 4.4.0-72.93-lowlatency 4.4.49) o The intent is to make the tool independent of Linux version dependencies,
+
+BOOT_IMAGE=/boot/vmlinuz-4.4.0-72-lowlatency
+
+When the Ubuntu VM is up :
+sudo apt-get install linux-image-4.4.0-72-lowlatency linux-headers-4.4.0-72-lowlatency volatility-tools
+Restart it, press SHIFT and boot on the new Kernel.
+
+Please enter the name of the new profile : 
+SuperProfile
+cd /usr/src/volatility-tools/linux && make && zip SuperProfile.zip /usr/src/volatility-tools/linux/module.dwarf /boot/System.map-4.4.0-72-lowlatency-generic
+Then place the zip file in : /usr/lib/python2.7/site-packages/volatility/plugins/overlays/linux
+
+Actual profiles installed : 
+LinuxFindMe2x64                   - A Profile for Linux FindMe2 x64
+LinuxUbuntu16041x64               - A Profile for Linux Ubuntu16041 x64
+LinuxUbuntu16044_440-72-LowLatx64 - A Profile for Linux Ubuntu16044_440-72-LowLat x64
+LinuxUbuntu16044_440-72x64        - A Profile for Linux Ubuntu16044_440-72 x64
+LinuxUbuntu1604x64                - A Profile for Linux Ubuntu1604 x64
+
+Which profiles are you wanting to use ?
+LinuxUbuntu16044_440-72-LowLatx64
+[+] Good profile, crypto_LUKS find ! Trying to get the Master Key...
+Keyfind progress: 100%
+[+] Master Key stored in key.bin !
+
+Foremost in progress..Processing: /home/maki/Documents/CTF/RootMe/findmeagain/backup/memory.raw
+|***|
 ```
 
-Maintenant on sait qu'il faut faire une Ubuntu 16-04 avec un kernel 4.4.0-72-lowlatency.
+Il faut entrer le nom du futur profile et le script sort toutes les commandes à mettre pour pouvoir générer le profile.
+Ce script permet de voir si une clé LUKS est récupérable, pour ça j'utilise un script trouvé sur un autre github : aeskeyfind.c, la version de ce dépot est juste la version compilée.
 https://github.com/volatilityfoundation/volatility/wiki/Linux
 
 
@@ -94,6 +147,6 @@ De plus, un **foremost** est fait sur le dump.
 
 ## TODO
 
-1. Gérer les commandes Linux
+1. Gérer les commandes Linux -> In progress...
 2. Changer le strings, grep en printkey pour le nom du PC
 3. Améliorer l'output
